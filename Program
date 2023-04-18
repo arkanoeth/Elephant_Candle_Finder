@@ -1,0 +1,37 @@
+input velasant = 30; // Number of previous candles
+input elefantesize = 2.0; // Multiple by which we seek to have a larger range of the elephant candle compared to previous candles
+
+def rango = AbsValue(open - close); // Define range as the absolute value of the difference between open and close
+
+def elefantebull = if high > Highest(high[1], velasant) and
+                   rango >= Highest(rango[1], velasant) * elefantesize
+                   then 1 else 0; // Define bullish elephant candle
+
+def elefantebear = if low < Lowest(low[1], velasant) and
+                   rango >= Highest(rango[1], velasant) * elefantesize
+                   then 1 else 0; // Define bearish elephant candle
+
+input coloralert = yes;
+AssignPriceColor(if coloralert and elefantebull then Color.YELLOW else
+                 if coloralert and elefantebear then Color.MAGENTA
+                 else Color.CURRENT); // Set color for elephant candles
+
+// Sound alert
+input soundalert = yes;
+Alert(soundalert and elefantebull , "Bullish Elephant Candle" , Alert.BAR, Sound.Ding);
+Alert(soundalert and elefantebear, "Bearish Elephant Candle", Alert.BAR, Sound.Ding);
+
+input tick_offset = 3;
+
+// Chart alert
+input chartalert = yes;
+AddChartBubble(chartalert and IsNaN(close[-1]),
+               low - TickSize() * tick_offset,
+               "R:" + AsText(rango) + "\nHR:" + AsText(Highest(rango[1], velasant)),
+               if elefantebull then Color.GREEN else
+               if elefantebear then Color.RED
+               else Color.GRAY, no);
+
+// Program alert
+input showalert = yes;
+Alert (showalert and IsNaN(close[-1]) , "ticker: " + GetSymbol() + "\nR:" + AsText(rango) + "\nHR:" + AsText(Highest(rango[1], velasant)), Alert.BAR, Sound.Ding);
