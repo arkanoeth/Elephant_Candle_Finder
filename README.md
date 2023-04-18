@@ -1,4 +1,4 @@
-# Elephant_Kline_Finder
+# Elephant_Candle_Finder
 
 The provided code is a trading strategy written in the programming language of Think Or Swim Plataform.
 
